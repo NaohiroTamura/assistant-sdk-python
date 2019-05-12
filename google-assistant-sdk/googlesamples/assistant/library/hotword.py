@@ -28,6 +28,8 @@ from google.assistant.library.event import EventType
 from google.assistant.library.file_helpers import existing_file
 from google.assistant.library.device_helpers import register_device
 
+import snowboywave
+
 import faulthandler
 faulthandler.enable()
 
@@ -56,12 +58,14 @@ def process_event(event):
         event(event.Event): The current event to process.
     """
     if event.type == EventType.ON_CONVERSATION_TURN_STARTED:
+        snowboywave.play_audio_file(snowboywave.DETECT_DING)
         print()
 
     print(event)
 
     if (event.type == EventType.ON_CONVERSATION_TURN_FINISHED and
             event.args and not event.args['with_follow_on_turn']):
+        snowboywave.play_audio_file(snowboywave.DETECT_DONG)
         print()
     if event.type == EventType.ON_DEVICE_ACTION:
         for command, params in event.actions:
