@@ -48,7 +48,7 @@ WARNING_NOT_REGISTERED = """
 """
 
 
-def process_event(event):
+def process_event(event, assistant):
     """Pretty prints events.
 
     Prints all events that occur with two spaces between each new
@@ -68,8 +68,19 @@ def process_event(event):
         snowboywave.play_audio_file(snowboywave.DETECT_DONG)
         print()
     if event.type == EventType.ON_DEVICE_ACTION:
+        assistant.stop_conversation()
         for command, params in event.actions:
             print('Do command', command, 'with params', str(params))
+            if command == "action.devices.commands.OnOff":
+                if params['on']:
+                    print('Turning the LED on.')
+                else:
+                    print('Turning the LED off.')
+            if command == "com.example.commands.BlinkLight":
+                print('Blinking', params['number'], 'times', params['speed'])
+                assistant.send_text_query('repeat after me '
+                                          + 'blinking ' + params['number']
+                                          + ' times ' + params['speed'])
 
 
 def main():
@@ -157,7 +168,7 @@ def main():
             if event.type == EventType.ON_START_FINISHED and args.query:
                 assistant.send_text_query(args.query)
 
-            process_event(event)
+            process_event(event, assistant)
 
 
 if __name__ == '__main__':
