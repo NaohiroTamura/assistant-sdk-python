@@ -77,12 +77,22 @@ def process_event(event, assistant):
                     print('Turning the LED on.')
                 else:
                     print('Turning the LED off.')
-            if command == "com.example.commands.BlinkLight":
-                print('Blinking', params['number'], 'times', params['speed'])
-                faasshell.commit_count_report()
-                assistant.send_text_query('repeat after me '
-                                          + 'blinking ' + params['number']
-                                          + ' times ' + params['speed'])
+            if command == "com.fujitsu.commands.CommitCountReport":
+                print('Querying faasshell from', params['from'], 'to', params['to'])
+                result = faasshell.commit_count_report()
+                if 'error' in result.keys():
+                    print('Commit count report returned error', result['error'])
+                    assistant.send_text_query('repeat after me '
+                                              + 'commit count report returned error '
+                                              + result['error'])
+                else:
+                    report = result['output']['github']['output']['values'][0]
+                    print('Commit count report returned ', report)
+                    assistant.send_text_query('repeat after me, '
+                                              + 'commit count report returned '
+                                              + report[0] + ' contributed '
+                                              + str(report[5]) + ' commits to '
+                                              + report[2] + ' repository.')
 
 
 def main():
