@@ -28,6 +28,7 @@ from google.assistant.library.event import EventType
 from google.assistant.library.file_helpers import existing_file
 from google.assistant.library.device_helpers import register_device
 
+import faasshell
 import snowboywave
 
 import faulthandler
@@ -78,6 +79,7 @@ def process_event(event, assistant):
                     print('Turning the LED off.')
             if command == "com.example.commands.BlinkLight":
                 print('Blinking', params['number'], 'times', params['speed'])
+                faasshell.commit_count_report()
                 assistant.send_text_query('repeat after me '
                                           + 'blinking ' + params['number']
                                           + ' times ' + params['speed'])
