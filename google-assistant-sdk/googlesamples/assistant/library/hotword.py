@@ -28,6 +28,7 @@ from google.assistant.library.event import EventType
 from google.assistant.library.file_helpers import existing_file
 from google.assistant.library.device_helpers import register_device
 
+from gpiozero import LED
 import faasshell
 import snowboywave
 
@@ -49,6 +50,9 @@ WARNING_NOT_REGISTERED = """
 """
 
 
+LED23 = LED(23)
+
+
 def process_event(event, assistant):
     """Pretty prints events.
 
@@ -60,6 +64,7 @@ def process_event(event, assistant):
     """
     if event.type == EventType.ON_CONVERSATION_TURN_STARTED:
         snowboywave.play_audio_file(snowboywave.DETECT_DING)
+        LED23.on()
         print()
 
     print(event)
@@ -67,6 +72,7 @@ def process_event(event, assistant):
     if (event.type == EventType.ON_CONVERSATION_TURN_FINISHED and
             event.args and not event.args['with_follow_on_turn']):
         snowboywave.play_audio_file(snowboywave.DETECT_DONG)
+        LED23.off()
         print()
     if event.type == EventType.ON_DEVICE_ACTION:
         assistant.stop_conversation()

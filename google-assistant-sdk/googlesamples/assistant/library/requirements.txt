@@ -3,3 +3,4 @@ argparse>=1.4.0,<2
 google-auth>=1.0.1,<2
 PyAudio==0.2.9
 requests
+gpiozero
