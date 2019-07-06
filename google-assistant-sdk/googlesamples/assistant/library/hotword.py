@@ -20,6 +20,7 @@ import argparse
 import json
 import os.path
 import pathlib2 as pathlib
+import subprocess
 
 import google.oauth2.credentials
 
@@ -79,10 +80,16 @@ def process_event(event, assistant):
         for command, params in event.actions:
             print('Do command', command, 'with params', str(params))
             if command == "action.devices.commands.OnOff":
-                if params['on']:
-                    print('Turning the LED on.')
-                else:
-                    print('Turning the LED off.')
+                try:
+                    if params['on']:
+                        subprocess.check_call('tentou')
+                        print('Turning the ligtht on.')
+                    else:
+                        subprocess.check_call('shoutou')
+                        print('Turning the light off.')
+                except:
+                    print("subprocess.check_call() failed")
+
             if command == "com.fujitsu.commands.CommitCountReport":
                 print('Querying faasshell from', params['from'], 'to', params['to'])
                 result = faasshell.commit_count_report()
