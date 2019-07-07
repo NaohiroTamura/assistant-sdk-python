@@ -37,6 +37,7 @@ import faasshell
 from BMP180 import BMP180
 import dht11
 from gpiozero import LED
+import lightsensor
 
 
 import faulthandler
@@ -59,6 +60,7 @@ WARNING_NOT_REGISTERED = """
 
 LED23 = LED(23)
 bmp = BMP180()
+lightsensor.setup()
 
 
 def process_event(event, assistant):
@@ -96,6 +98,14 @@ def process_event(event, assistant):
                         print('Turning the light off.')
                 except:
                     print("subprocess.check_call() failed")
+
+            if command == "io.github.naohirotamura.commands.ReportLightSensor":
+                ratio = lightsensor.read_lightsensor_adc_ratio()
+                print('Reporting light sensor AD converter ratio: %.2f percent'
+                      % ratio)
+                assistant.send_text_query(
+                    'repeat after me, '
+                    + 'light sensor AD converter ratio is %.2f percent' % ratio)
 
             if command == "io.github.naohirotamura.commands.ReportHumidity":
                 for i in range(20):

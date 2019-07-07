@@ -6,6 +6,42 @@
     },
     "actions": [
         {
+            "name": "io.github.naohirotamura.commands.ReportLightSensor",
+            "availability": {
+                "deviceClasses": [
+                    {
+                        "assistantSdkDevice": {}
+                    }
+                ]
+            },
+            "intent": {
+                "name": "io.github.naohirotamura.commands.ReportLightSensor",
+                "trigger": {
+                    "queryPatterns": [
+                        "Report light sensor"
+                    ]
+                }
+            },
+            "fulfillment": {
+                "staticFulfillment": {
+                    "templatedResponse": {
+                        "items": [
+                            {
+                                "simpleResponse": {
+                                    "textToSpeech": "Reporting light sensor"
+                                }
+                            },
+                            {
+                                "deviceExecution": {
+                                    "command": "io.github.naohirotamura.commands.ReportLightSensor"
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        {
             "name": "io.github.naohirotamura.commands.ReportHumidity",
             "availability": {
                 "deviceClasses": [
