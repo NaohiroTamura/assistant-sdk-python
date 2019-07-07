@@ -6,6 +6,42 @@
     },
     "actions": [
         {
+            "name": "io.github.naohirotamura.commands.ReportAltitude",
+            "availability": {
+                "deviceClasses": [
+                    {
+                        "assistantSdkDevice": {}
+                    }
+                ]
+            },
+            "intent": {
+                "name": "io.github.naohirotamura.commands.ReportAltitude",
+                "trigger": {
+                    "queryPatterns": [
+                        "Report altitude"
+                    ]
+                }
+            },
+            "fulfillment": {
+                "staticFulfillment": {
+                    "templatedResponse": {
+                        "items": [
+                            {
+                                "simpleResponse": {
+                                    "textToSpeech": "Reporting altitude"
+                                }
+                            },
+                            {
+                                "deviceExecution": {
+                                    "command": "io.github.naohirotamura.commands.ReportAltitude"
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        {
             "name": "io.github.naohirotamura.commands.ReportTemperature",
             "availability": {
                 "deviceClasses": [

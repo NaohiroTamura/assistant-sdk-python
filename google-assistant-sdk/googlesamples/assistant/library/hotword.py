@@ -95,6 +95,12 @@ def process_event(event, assistant):
                 except:
                     print("subprocess.check_call() failed")
 
+            if command == "io.github.naohirotamura.commands.ReportAltitude":
+                altitude = bmp.read_altitude()
+                print('Reporting altitude: %.2f meter' % altitude)
+                assistant.send_text_query('repeat after me, '
+                                          + 'altitude is %.2f meter' % altitude)
+
             if command == "io.github.naohirotamura.commands.ReportTemperature":
                 temperature = bmp.read_temperature()
                 print('Reporting room temperature: %.2f C' % temperature)
