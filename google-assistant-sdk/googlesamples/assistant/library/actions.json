@@ -6,6 +6,42 @@
     },
     "actions": [
         {
+            "name": "io.github.naohirotamura.commands.ReportHumidity",
+            "availability": {
+                "deviceClasses": [
+                    {
+                        "assistantSdkDevice": {}
+                    }
+                ]
+            },
+            "intent": {
+                "name": "io.github.naohirotamura.commands.ReportHumidity",
+                "trigger": {
+                    "queryPatterns": [
+                        "Report humidity"
+                    ]
+                }
+            },
+            "fulfillment": {
+                "staticFulfillment": {
+                    "templatedResponse": {
+                        "items": [
+                            {
+                                "simpleResponse": {
+                                    "textToSpeech": "Reporting humidity"
+                                }
+                            },
+                            {
+                                "deviceExecution": {
+                                    "command": "io.github.naohirotamura.commands.ReportHumidity"
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        {
             "name": "io.github.naohirotamura.commands.ReportAltitude",
             "availability": {
                 "deviceClasses": [

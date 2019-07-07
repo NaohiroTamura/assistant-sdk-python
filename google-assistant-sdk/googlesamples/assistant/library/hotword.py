@@ -21,6 +21,7 @@ import json
 import os.path
 import pathlib2 as pathlib
 import subprocess
+import time
 
 import google.oauth2.credentials
 
@@ -34,6 +35,7 @@ import snowboywave
 import faasshell
 
 from BMP180 import BMP180
+import dht11
 from gpiozero import LED
 
 
@@ -94,6 +96,25 @@ def process_event(event, assistant):
                         print('Turning the light off.')
                 except:
                     print("subprocess.check_call() failed")
+
+            if command == "io.github.naohirotamura.commands.ReportHumidity":
+                for i in range(20):
+                    result = dht11.read_dht11_dat()
+                    if result:
+                        break
+                    else:
+                        print("%s: Data not good, skip" % i)
+                        time.sleep(0.5)
+                if result:
+                    humidity, temperature = result
+                    print("Reporting humidity: %s %%,  Temperature: %s C"
+                          % (humidity, temperature))
+                    assistant.send_text_query('repeat after me, '
+                                              + 'humidity is %s percent' % humidity)
+                else:
+                    print('Reporting humidity: timeout')
+                    assistant.send_text_query('repeat after me, '
+                                              + 'getting humidity timeout try again')
 
             if command == "io.github.naohirotamura.commands.ReportAltitude":
                 altitude = bmp.read_altitude()

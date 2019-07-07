@@ -5,3 +5,4 @@ PyAudio==0.2.9
 requests
 gpiozero
 smbus
+RPi.GPIO
