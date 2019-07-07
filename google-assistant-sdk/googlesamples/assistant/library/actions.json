@@ -6,6 +6,42 @@
     },
     "actions": [
         {
+            "name": "io.github.naohirotamura.commands.ReportPressure",
+            "availability": {
+                "deviceClasses": [
+                    {
+                        "assistantSdkDevice": {}
+                    }
+                ]
+            },
+            "intent": {
+                "name": "io.github.naohirotamura.commands.ReportPressure",
+                "trigger": {
+                    "queryPatterns": [
+                        "Report pressure"
+                    ]
+                }
+            },
+            "fulfillment": {
+                "staticFulfillment": {
+                    "templatedResponse": {
+                        "items": [
+                            {
+                                "simpleResponse": {
+                                    "textToSpeech": "Reporting pressure"
+                                }
+                            },
+                            {
+                                "deviceExecution": {
+                                    "command": "io.github.naohirotamura.commands.ReportPressure"
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        {
             "name": "com.fujitsu.commands.CommitCountReport",
             "availability": {
                 "deviceClasses": [

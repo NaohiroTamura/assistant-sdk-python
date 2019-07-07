@@ -29,9 +29,13 @@ from google.assistant.library.event import EventType
 from google.assistant.library.file_helpers import existing_file
 from google.assistant.library.device_helpers import register_device
 
-from gpiozero import LED
-import faasshell
 import snowboywave
+
+import faasshell
+
+from BMP180 import BMP180
+from gpiozero import LED
+
 
 import faulthandler
 faulthandler.enable()
@@ -52,6 +56,7 @@ WARNING_NOT_REGISTERED = """
 
 
 LED23 = LED(23)
+bmp = BMP180()
 
 
 def process_event(event, assistant):
@@ -89,6 +94,13 @@ def process_event(event, assistant):
                         print('Turning the light off.')
                 except:
                     print("subprocess.check_call() failed")
+
+            if command == "io.github.naohirotamura.commands.ReportPressure":
+                pressure = bmp.read_pressure() / 100.0
+                print('Reporting pressure: %.2f hPa' % pressure)
+                assistant.send_text_query('repeat after me, '
+                                          + 'current pressure is %.2f hPa' % pressure)
+
 
             if command == "com.fujitsu.commands.CommitCountReport":
                 print('Querying faasshell from', params['from'], 'to', params['to'])
