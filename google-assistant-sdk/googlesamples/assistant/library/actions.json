@@ -6,6 +6,42 @@
     },
     "actions": [
         {
+            "name": "io.github.naohirotamura.commands.ReportTemperature",
+            "availability": {
+                "deviceClasses": [
+                    {
+                        "assistantSdkDevice": {}
+                    }
+                ]
+            },
+            "intent": {
+                "name": "io.github.naohirotamura.commands.ReportTemperature",
+                "trigger": {
+                    "queryPatterns": [
+                        "Report room temperature"
+                    ]
+                }
+            },
+            "fulfillment": {
+                "staticFulfillment": {
+                    "templatedResponse": {
+                        "items": [
+                            {
+                                "simpleResponse": {
+                                    "textToSpeech": "Reporting room temperature"
+                                }
+                            },
+                            {
+                                "deviceExecution": {
+                                    "command": "io.github.naohirotamura.commands.ReportTemperature"
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        {
             "name": "io.github.naohirotamura.commands.ReportPressure",
             "availability": {
                 "deviceClasses": [

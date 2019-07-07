@@ -95,6 +95,13 @@ def process_event(event, assistant):
                 except:
                     print("subprocess.check_call() failed")
 
+            if command == "io.github.naohirotamura.commands.ReportTemperature":
+                temperature = bmp.read_temperature()
+                print('Reporting room temperature: %.2f C' % temperature)
+                assistant.send_text_query(
+                    'repeat after me, '
+                    + 'current room temperature is %.2f centigrade' % temperature)
+
             if command == "io.github.naohirotamura.commands.ReportPressure":
                 pressure = bmp.read_pressure() / 100.0
                 print('Reporting pressure: %.2f hPa' % pressure)
