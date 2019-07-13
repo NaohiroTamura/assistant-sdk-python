@@ -41,13 +41,17 @@ try:
         assistant_helpers,
         audio_helpers,
         browser_helpers,
-        device_helpers
+        device_helpers,
+        snowboydecoder,
+        snowboywave
     )
 except (SystemError, ImportError):
     import assistant_helpers
     import audio_helpers
     import browser_helpers
     import device_helpers
+    import snowboydecoder
+    import snowboywave
 
 
 ASSISTANT_API_ENDPOINT = 'embeddedassistant.googleapis.com'
@@ -451,6 +455,19 @@ def main(api_endpoint, credentials, project_id,
         # keep recording voice requests using the microphone
         # and playing back assistant response using the speaker.
         # When the once flag is set, don't wait for a trigger. Otherwise, wait.
+        def detected_callback():
+            print("hotword detected")
+            snowboywave.play_audio_file(snowboywave.DETECT_DING)
+            assistant.assist()
+            snowboywave.play_audio_file(snowboywave.DETECT_DONG)
+
+        if once:
+            assistant.assist()
+        else:
+            detector = snowboydecoder.HotwordDetector("resources/snowboy.umdl", sensitivity=0.9, audio_gain=1)
+            detector.start(detected_callback)
+
+        """
         wait_for_user_trigger = not once
         while True:
             if wait_for_user_trigger:
@@ -463,6 +480,7 @@ def main(api_endpoint, credentials, project_id,
             # If we only want one conversation, break.
             if once and (not continue_conversation):
                 break
+        """
 
 
 if __name__ == '__main__':
