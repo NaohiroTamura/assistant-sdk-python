@@ -61,6 +61,7 @@ CLOSE_MICROPHONE = embedded_assistant_pb2.DialogStateOut.CLOSE_MICROPHONE
 PLAYING = embedded_assistant_pb2.ScreenOutConfig.PLAYING
 DEFAULT_GRPC_DEADLINE = 60 * 3 + 5
 
+logger = logging.getLogger(__name__)
 
 class SampleAssistant(object):
     """Sample Assistant that supports conversations and device actions.
@@ -114,7 +115,7 @@ class SampleAssistant(object):
     def is_grpc_error_unavailable(e):
         is_grpc_error = isinstance(e, grpc.RpcError)
         if is_grpc_error and (e.code() == grpc.StatusCode.UNAVAILABLE):
-            logging.error('grpc unavailable error: %s', e)
+            logger.error('grpc unavailable error: %s', e)
             return True
         return False
 
@@ -129,13 +130,13 @@ class SampleAssistant(object):
         device_actions_futures = []
 
         self.conversation_stream.start_recording()
-        logging.info('Recording audio request.')
+        logger.info('Recording audio request.')
 
         def iter_log_assist_requests():
             for c in self.gen_assist_requests():
                 assistant_helpers.log_assist_request_without_audio(c)
                 yield c
-            logging.debug('Reached end of AssistRequest iteration.')
+            logger.debug('Reached end of AssistRequest iteration.')
 
         # This generator yields AssistResponse proto messages
         # received from the gRPC Google Assistant API.
@@ -143,30 +144,30 @@ class SampleAssistant(object):
                                           self.deadline):
             assistant_helpers.log_assist_response_without_audio(resp)
             if resp.event_type == END_OF_UTTERANCE:
-                logging.info('End of audio request detected.')
-                logging.info('Stopping recording.')
+                logger.info('End of audio request detected.')
+                logger.info('Stopping recording.')
                 self.conversation_stream.stop_recording()
             if resp.speech_results:
-                logging.info('Transcript of user request: "%s".',
+                logger.info('Transcript of user request: "%s".',
                              ' '.join(r.transcript
                                       for r in resp.speech_results))
             if len(resp.audio_out.audio_data) > 0:
                 if not self.conversation_stream.playing:
                     self.conversation_stream.stop_recording()
                     self.conversation_stream.start_playback()
-                    logging.info('Playing assistant response.')
+                    logger.info('Playing assistant response.')
                 self.conversation_stream.write(resp.audio_out.audio_data)
             if resp.dialog_state_out.conversation_state:
                 conversation_state = resp.dialog_state_out.conversation_state
-                logging.debug('Updating conversation state.')
+                logger.debug('Updating conversation state.')
                 self.conversation_state = conversation_state
             if resp.dialog_state_out.volume_percentage != 0:
                 volume_percentage = resp.dialog_state_out.volume_percentage
-                logging.info('Setting volume to %s%%', volume_percentage)
+                logger.info('Setting volume to %s%%', volume_percentage)
                 self.conversation_stream.volume_percentage = volume_percentage
             if resp.dialog_state_out.microphone_mode == DIALOG_FOLLOW_ON:
                 continue_conversation = True
-                logging.info('Expecting follow-on query from user.')
+                logger.info('Expecting follow-on query from user.')
             elif resp.dialog_state_out.microphone_mode == CLOSE_MICROPHONE:
                 continue_conversation = False
             if resp.device_action.device_request_json:
@@ -181,10 +182,10 @@ class SampleAssistant(object):
                 system_browser.display(resp.screen_out.data)
 
         if len(device_actions_futures):
-            logging.info('Waiting for device executions to complete.')
+            logger.info('Waiting for device executions to complete.')
             concurrent.futures.wait(device_actions_futures)
 
-        logging.info('Finished playing assistant response.')
+        logger.info('Finished playing assistant response.')
         self.conversation_stream.stop_playback()
         return continue_conversation
 
@@ -318,7 +319,8 @@ def main(api_endpoint, credentials, project_id,
         $ python -m googlesamples.assistant -i <input file> -o <output file>
     """
     # Setup logging.
-    logging.basicConfig(level=logging.DEBUG if verbose else logging.INFO)
+    # logging.basicConfig(level=logging.DEBUG if verbose else logging.INFO)
+    logger.setLevel(logging.DEBUG if verbose else logging.INFO)
 
     # Load OAuth 2.0 credentials.
     try:
@@ -328,15 +330,15 @@ def main(api_endpoint, credentials, project_id,
             http_request = google.auth.transport.requests.Request()
             credentials.refresh(http_request)
     except Exception as e:
-        logging.error('Error loading credentials: %s', e)
-        logging.error('Run google-oauthlib-tool to initialize '
+        logger.error('Error loading credentials: %s', e)
+        logger.error('Run google-oauthlib-tool to initialize '
                       'new OAuth 2.0 credentials.')
         sys.exit(-1)
 
     # Create an authorized gRPC channel.
     grpc_channel = google.auth.transport.grpc.secure_authorized_channel(
         credentials, http_request, api_endpoint)
-    logging.info('Connecting to %s', api_endpoint)
+    logger.info('Connecting to %s', api_endpoint)
 
     # Configure audio source and sink.
     audio_device = None
@@ -384,18 +386,18 @@ def main(api_endpoint, credentials, project_id,
                 device = json.load(f)
                 device_id = device['id']
                 device_model_id = device['model_id']
-                logging.info("Using device model %s and device id %s",
+                logger.info("Using device model %s and device id %s",
                              device_model_id,
                              device_id)
         except Exception as e:
-            logging.warning('Device config not found: %s' % e)
-            logging.info('Registering device')
+            logger.warning('Device config not found: %s' % e)
+            logger.info('Registering device')
             if not device_model_id:
-                logging.error('Option --device-model-id required '
+                logger.error('Option --device-model-id required '
                               'when registering a device instance.')
                 sys.exit(-1)
             if not project_id:
-                logging.error('Option --project-id required '
+                logger.error('Option --project-id required '
                               'when registering a device instance.')
                 sys.exit(-1)
             device_base_url = (
@@ -413,9 +415,9 @@ def main(api_endpoint, credentials, project_id,
             )
             r = session.post(device_base_url, data=json.dumps(payload))
             if r.status_code != 200:
-                logging.error('Failed to register device: %s', r.text)
+                logger.error('Failed to register device: %s', r.text)
                 sys.exit(-1)
-            logging.info('Device registered: %s', device_id)
+            logger.info('Device registered: %s', device_id)
             pathlib.Path(os.path.dirname(device_config)).mkdir(exist_ok=True)
             with open(device_config, 'w') as f:
                 json.dump(payload, f)
@@ -425,20 +427,20 @@ def main(api_endpoint, credentials, project_id,
     @device_handler.command('action.devices.commands.OnOff')
     def onoff(on):
         if on:
-            logging.info('Turning device on')
+            logger.info('Turning device on')
         else:
-            logging.info('Turning device off')
+            logger.info('Turning device off')
 
     @device_handler.command('com.example.commands.BlinkLight')
     def blink(speed, number):
-        logging.info('Blinking device %s times.' % number)
+        logger.info('Blinking device %s times.' % number)
         delay = 1
         if speed == "SLOWLY":
             delay = 2
         elif speed == "QUICKLY":
             delay = 0.5
         for i in range(int(number)):
-            logging.info('Device is blinking.')
+            logger.info('Device is blinking.')
             time.sleep(delay)
 
     with SampleAssistant(lang, device_model_id, device_id,
