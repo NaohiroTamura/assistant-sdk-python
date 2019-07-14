@@ -37,7 +37,10 @@
                             },
                             {
                                 "deviceExecution": {
-                                    "command": "io.github.naohirotamura.commands.ReportLightSensor"
+                                    "command": "io.github.naohirotamura.commands.ReportLightSensor",
+                                    "params": {
+                                        "dummy": "dummy"
+                                    }
                                 }
                             }
                         ]
@@ -74,7 +77,10 @@
                             },
                             {
                                 "deviceExecution": {
-                                    "command": "io.github.naohirotamura.commands.ReportHumidity"
+                                    "command": "io.github.naohirotamura.commands.ReportHumidity",
+                                    "params": {
+                                        "dummy": "dummy"
+                                    }
                                 }
                             }
                         ]
@@ -111,7 +117,10 @@
                             },
                             {
                                 "deviceExecution": {
-                                    "command": "io.github.naohirotamura.commands.ReportAltitude"
+                                    "command": "io.github.naohirotamura.commands.ReportAltitude",
+                                    "params": {
+                                        "dummy": "dummy"
+                                    }
                                 }
                             }
                         ]
@@ -150,7 +159,10 @@
                             },
                             {
                                 "deviceExecution": {
-                                    "command": "io.github.naohirotamura.commands.ReportTemperature"
+                                    "command": "io.github.naohirotamura.commands.ReportTemperature",
+                                    "params": {
+                                        "dummy": "dummy"
+                                    }
                                 }
                             }
                         ]
@@ -187,7 +199,10 @@
                             },
                             {
                                 "deviceExecution": {
-                                    "command": "io.github.naohirotamura.commands.ReportPressure"
+                                    "command": "io.github.naohirotamura.commands.ReportPressure",
+                                    "params": {
+                                        "dummy": "dummy"
+                                    }
                                 }
                             }
                         ]
@@ -208,18 +223,19 @@
                 "name": "com.fujitsu.commands.CommitCountReport",
                 "parameters": [
                     {
-                        "name": "from",
+                        "name": "start",
                         "type": "SchemaOrg_Date"
                     },
                     {
-                        "name": "to",
+                        "name": "end",
                         "type": "SchemaOrg_Date"
                     }
                 ],
                 "trigger": {
                     "queryPatterns": [
-                        "query faasshell from $SchemaOrg_Date:from (to $SchemaOrg_Date:to)?",
-                        "貢献数は"
+                        " faasshell from $SchemaOrg_Date:start (to $SchemaOrg_Date:end)?",
+                        "貢献数は",
+                        "コミット数は"
                     ]
                 }
             },
@@ -236,8 +252,8 @@
                                 "deviceExecution": {
                                     "command": "com.fujitsu.commands.CommitCountReport",
                                     "params": {
-                                        "from": "$from",
-                                        "to": "$to"
+                                        "start": "$start",
+                                        "end": "$end"
                                     }
                                 }
                             }

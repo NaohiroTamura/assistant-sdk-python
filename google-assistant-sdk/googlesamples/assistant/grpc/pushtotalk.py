@@ -21,6 +21,7 @@ import os
 import os.path
 import pathlib2 as pathlib
 import sys
+import subprocess
 import time
 import uuid
 
@@ -42,8 +43,7 @@ try:
         audio_helpers,
         browser_helpers,
         device_helpers,
-        snowboydecoder,
-        snowboywave
+        snowboydecoder
     )
 except (SystemError, ImportError):
     import assistant_helpers
@@ -51,7 +51,16 @@ except (SystemError, ImportError):
     import browser_helpers
     import device_helpers
     import snowboydecoder
-    import snowboywave
+
+import snowboywave
+import synthesize_text
+
+import faasshell
+
+from BMP180 import BMP180
+import dht11
+from gpiozero import LED
+import lightsensor
 
 
 ASSISTANT_API_ENDPOINT = 'embeddedassistant.googleapis.com'
@@ -62,6 +71,11 @@ PLAYING = embedded_assistant_pb2.ScreenOutConfig.PLAYING
 DEFAULT_GRPC_DEADLINE = 60 * 3 + 5
 
 logger = logging.getLogger(__name__)
+
+LED23 = LED(23)
+bmp = BMP180()
+lightsensor.setup()
+
 
 class SampleAssistant(object):
     """Sample Assistant that supports conversations and device actions.
@@ -426,22 +440,79 @@ def main(api_endpoint, credentials, project_id,
 
     @device_handler.command('action.devices.commands.OnOff')
     def onoff(on):
+        # on: つけて、点灯して off:消して、消灯して
         if on:
+            subprocess.check_call('tentou')
             logger.info('Turning device on')
         else:
+            subprocess.check_call('shoutou')
             logger.info('Turning device off')
 
-    @device_handler.command('com.example.commands.BlinkLight')
-    def blink(speed, number):
-        logger.info('Blinking device %s times.' % number)
-        delay = 1
-        if speed == "SLOWLY":
-            delay = 2
-        elif speed == "QUICKLY":
-            delay = 0.5
-        for i in range(int(number)):
-            logger.info('Device is blinking.')
-            time.sleep(delay)
+    @device_handler.command('io.github.naohirotamura.commands.ReportLightSensor')
+    def light_sensor(dummy):
+        ratio = lightsensor.read_lightsensor_adc_ratio()
+        logger.info('Reporting light sensor AD converter ratio: %.2f percent'
+              % ratio)
+        synthesize_text.synthesize_text(
+            'ライトセンサー AD コンバーター比は %.2f パーセントです' % ratio)
+
+    @device_handler.command('io.github.naohirotamura.commands.ReportHumidity')
+    def humidity(dummy):
+        for i in range(20):
+            result = dht11.read_dht11_dat()
+            if result:
+                break
+            else:
+                logger.info("%s: Data not good, skip" % i)
+                time.sleep(0.5)
+        if result:
+            humidity, temperature = result
+            logger.info("Reporting humidity: %s %%,  Temperature: %s C"
+                        % (humidity, temperature))
+            synthesize_text.synthesize_text(
+                '湿度は %s パーセントです' % humidity)
+        else:
+            logger.info('Reporting humidity: timeout')
+            synthesize_text.synthesize_text(
+                '湿度の取得はタイムアウトしました')
+
+    @device_handler.command('io.github.naohirotamura.commands.ReportAltitude')
+    def altitude(dummy):
+        altitude = bmp.read_altitude()
+        logger.info('Reporting altitude: %.2f meter' % altitude)
+        synthesize_text.synthesize_text(
+            '標高は %.2f メートルです' % altitude)
+
+    @device_handler.command('io.github.naohirotamura.commands.ReportTemperature')
+    def temperature(dummy):
+        temperature = bmp.read_temperature()
+        logger.info('Reporting room temperature: %.2f C' % temperature)
+        synthesize_text.synthesize_text(
+            '部屋の気温は %.2f 度です' % temperature)
+
+    @device_handler.command('io.github.naohirotamura.commands.ReportPressure')
+    def pressure(dummy):
+        pressure = bmp.read_pressure() / 100.0
+        logger.info('Reporting pressure: %.2f hPa' % pressure)
+        synthesize_text.synthesize_text(
+            '部屋の気圧は %.2f ヘクトパスカルです' % pressure)
+
+    @device_handler.command('com.fujitsu.commands.CommitCountReport')
+    def commit_count_report(start, end):
+        logger.info('Querying faasshell from', start, 'to', end)
+        result = faasshell.commit_count_report()
+        if 'error' in result.keys():
+            logger.info('Commit count report returned error', result['error'])
+            synthesize_text.synthesize_text(
+                'コミットカウントレポートはエラーになりました')
+        else:
+            report = result['output']['github']['output']['values'][0]
+            logger.info('Commit count report returned ', report)
+            synthesize_text.synthesize_text(
+                'コミットカウントレポートによると、リポジトリ'
+                + report[2] + ' へ' + report[0] + 'は、コミット数'
+                + str(report[5]) + ' 件の貢献をしました')
+
 
     with SampleAssistant(lang, device_model_id, device_id,
                          conversation_stream, display,
@@ -458,10 +529,12 @@ def main(api_endpoint, credentials, project_id,
         # and playing back assistant response using the speaker.
         # When the once flag is set, don't wait for a trigger. Otherwise, wait.
         def detected_callback():
-            print("hotword detected")
+            logger.info("hotword detected")
             snowboywave.play_audio_file(snowboywave.DETECT_DING)
+            LED23.on()
             assistant.assist()
             snowboywave.play_audio_file(snowboywave.DETECT_DONG)
+            LED23.off()
 
         if once:
             assistant.assist()

@@ -146,7 +146,7 @@ def process_event(event, assistant):
 
 
             if command == "com.fujitsu.commands.CommitCountReport":
-                print('Querying faasshell from', params['from'], 'to', params['to'])
+                print('Querying faasshell from', params['start'], 'to', params['end'])
                 result = faasshell.commit_count_report()
                 if 'error' in result.keys():
                     print('Commit count report returned error', result['error'])
