@@ -1,4 +1,5 @@
 {
+    "locale": "ja",
     "manifest": {
         "displayName": "Commit count report",
         "invocationName": "Commit count report",
@@ -18,7 +19,10 @@
                 "name": "io.github.naohirotamura.commands.ReportLightSensor",
                 "trigger": {
                     "queryPatterns": [
-                        "Report light sensor"
+                        "明るさは",
+                        "部屋の明るさは",
+                        "光度は",
+                        "部屋の光度は"
                     ]
                 }
             },
@@ -28,7 +32,7 @@
                         "items": [
                             {
                                 "simpleResponse": {
-                                    "textToSpeech": "Reporting light sensor"
+                                    "textToSpeech": "はい"
                                 }
                             },
                             {
@@ -54,7 +58,8 @@
                 "name": "io.github.naohirotamura.commands.ReportHumidity",
                 "trigger": {
                     "queryPatterns": [
-                        "Report humidity"
+                        "湿度は",
+                        "部屋の湿度は"
                     ]
                 }
             },
@@ -64,7 +69,7 @@
                         "items": [
                             {
                                 "simpleResponse": {
-                                    "textToSpeech": "Reporting humidity"
+                                    "textToSpeech": "はい"
                                 }
                             },
                             {
@@ -90,7 +95,8 @@
                 "name": "io.github.naohirotamura.commands.ReportAltitude",
                 "trigger": {
                     "queryPatterns": [
-                        "Report altitude"
+                        "標高は",
+                        "部屋の標高は"
                     ]
                 }
             },
@@ -100,7 +106,7 @@
                         "items": [
                             {
                                 "simpleResponse": {
-                                    "textToSpeech": "Reporting altitude"
+                                    "textToSpeech": "はい"
                                 }
                             },
                             {
@@ -126,7 +132,10 @@
                 "name": "io.github.naohirotamura.commands.ReportTemperature",
                 "trigger": {
                     "queryPatterns": [
-                        "Report room temperature"
+                        "温度は",
+                        "気温は",
+                        "部屋の温度は",
+                        "部屋の気温は"
                     ]
                 }
             },
@@ -136,7 +145,7 @@
                         "items": [
                             {
                                 "simpleResponse": {
-                                    "textToSpeech": "Reporting room temperature"
+                                    "textToSpeech": "はい"
                                 }
                             },
                             {
@@ -162,7 +171,8 @@
                 "name": "io.github.naohirotamura.commands.ReportPressure",
                 "trigger": {
                     "queryPatterns": [
-                        "Report pressure"
+                        "気圧は",
+                        "部屋の気圧は"
                     ]
                 }
             },
@@ -172,7 +182,7 @@
                         "items": [
                             {
                                 "simpleResponse": {
-                                    "textToSpeech": "Reporting pressure"
+                                    "textToSpeech": "はい"
                                 }
                             },
                             {
@@ -209,7 +219,7 @@
                 "trigger": {
                     "queryPatterns": [
                         "query faasshell from $SchemaOrg_Date:from (to $SchemaOrg_Date:to)?",
-                        "query github"
+                        "貢献数は"
                     ]
                 }
             },
@@ -219,7 +229,7 @@
                         "items": [
                             {
                                 "simpleResponse": {
-                                    "textToSpeech": "Querying faasshell"
+                                    "textToSpeech": "はい、少々お待ちください"
                                 }
                             },
                             {

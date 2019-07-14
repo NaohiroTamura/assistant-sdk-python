@@ -6,3 +6,4 @@ requests
 gpiozero
 smbus
 RPi.GPIO
+google-cloud-texttospeech==0.4.0

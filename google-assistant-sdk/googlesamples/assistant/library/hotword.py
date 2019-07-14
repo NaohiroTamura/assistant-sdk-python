@@ -31,6 +31,7 @@ from google.assistant.library.file_helpers import existing_file
 from google.assistant.library.device_helpers import register_device
 
 import snowboywave
+import synthesize_text
 
 import faasshell
 
@@ -103,9 +104,8 @@ def process_event(event, assistant):
                 ratio = lightsensor.read_lightsensor_adc_ratio()
                 print('Reporting light sensor AD converter ratio: %.2f percent'
                       % ratio)
-                assistant.send_text_query(
-                    'repeat after me, '
-                    + 'light sensor AD converter ratio is %.2f percent' % ratio)
+                synthesize_text.synthesize_text(
+                    'ライトセンサー AD コンバーター比は %.2f パーセントです' % ratio)
 
             if command == "io.github.naohirotamura.commands.ReportHumidity":
                 for i in range(20):
@@ -119,31 +119,30 @@ def process_event(event, assistant):
                     humidity, temperature = result
                     print("Reporting humidity: %s %%,  Temperature: %s C"
                           % (humidity, temperature))
-                    assistant.send_text_query('repeat after me, '
-                                              + 'humidity is %s percent' % humidity)
+                    synthesize_text.synthesize_text(
+                        '湿度は %s パーセントです' % humidity)
                 else:
                     print('Reporting humidity: timeout')
-                    assistant.send_text_query('repeat after me, '
-                                              + 'getting humidity timeout try again')
+                    synthesize_text.synthesize_text(
+                        '湿度の取得はタイムアウトしました')
 
             if command == "io.github.naohirotamura.commands.ReportAltitude":
                 altitude = bmp.read_altitude()
                 print('Reporting altitude: %.2f meter' % altitude)
-                assistant.send_text_query('repeat after me, '
-                                          + 'altitude is %.2f meter' % altitude)
+                synthesize_text.synthesize_text(
+                    '標高は %.2f メートルです' % altitude)
 
             if command == "io.github.naohirotamura.commands.ReportTemperature":
                 temperature = bmp.read_temperature()
                 print('Reporting room temperature: %.2f C' % temperature)
-                assistant.send_text_query(
-                    'repeat after me, '
-                    + 'current room temperature is %.2f centigrade' % temperature)
+                synthesize_text.synthesize_text(
+                    '部屋の気温は %.2f 度です' % temperature)
 
             if command == "io.github.naohirotamura.commands.ReportPressure":
                 pressure = bmp.read_pressure() / 100.0
                 print('Reporting pressure: %.2f hPa' % pressure)
-                assistant.send_text_query('repeat after me, '
-                                          + 'current pressure is %.2f hPa' % pressure)
+                synthesize_text.synthesize_text(
+                    '部屋の気圧は %.2f ヘクトパスカルです' % pressure)
 
 
             if command == "com.fujitsu.commands.CommitCountReport":
@@ -151,17 +150,15 @@ def process_event(event, assistant):
                 result = faasshell.commit_count_report()
                 if 'error' in result.keys():
                     print('Commit count report returned error', result['error'])
-                    assistant.send_text_query('repeat after me '
-                                              + 'commit count report returned error '
-                                              + result['error'])
+                    synthesize_text.synthesize_text(
+                        'コミットカウントレポートはエラーになりました')
                 else:
                     report = result['output']['github']['output']['values'][0]
                     print('Commit count report returned ', report)
-                    assistant.send_text_query('repeat after me, '
-                                              + 'commit count report returned '
-                                              + report[0] + ' contributed '
-                                              + str(report[5]) + ' commits to '
-                                              + report[2] + ' repository.')
+                    synthesize_text.synthesize_text(
+                        'コミットカウントレポートによると、リポジトリ'
+                        + report[2] + ' へ' + report[0] + 'は、コミット数'
+                        + str(report[5]) + ' 件の貢献をしました')
 
 
 def main():
