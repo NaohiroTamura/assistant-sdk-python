@@ -32,7 +32,7 @@ DEFAULT_AUDIO_ITER_SIZE = 3200
 # Overflows/underflow with streaming on the PiZero (choppy audio)
 # https://github.com/googlesamples/assistant-sdk-python/issues/272
 #DEFAULT_AUDIO_DEVICE_BLOCK_SIZE = 6400
-DEFAULT_AUDIO_DEVICE_BLOCK_SIZE = 80000
+DEFAULT_AUDIO_DEVICE_BLOCK_SIZE = 25600
 DEFAULT_AUDIO_DEVICE_FLUSH_SIZE = 25600
 
 

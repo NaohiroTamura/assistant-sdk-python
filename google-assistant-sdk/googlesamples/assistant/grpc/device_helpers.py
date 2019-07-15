@@ -25,6 +25,8 @@ key_payload_ = 'payload'
 key_commands_ = 'commands'
 key_id_ = 'id'
 
+logger = logging.getLogger(__name__)
+
 
 class DeviceRequestHandler(object):
     """Asynchronous dispatcher for Device actions commands.
@@ -74,11 +76,11 @@ class DeviceRequestHandler(object):
         fs = []
         for device in devices:
             if device[key_id_] != self.device_id:
-                logging.warning('Ignoring command for unknown device: %s'
-                                % device[key_id_])
+                logger.warning('Ignoring command for unknown device: %s'
+                               % device[key_id_])
                 continue
             if not execution:
-                logging.warning('Ignoring noop execution')
+                logger.warning('Ignoring noop execution')
                 continue
             for command in execution:
                 f = self.executor.submit(
@@ -91,11 +93,16 @@ class DeviceRequestHandler(object):
         """Dispatch device commands to the appropriate handler."""
         try:
             if command in self.handlers:
-                self.handlers[command](**params)
+                if params is None:
+                    logger.warning('None params command: %s',
+                                   self.handlers[command].__name__)
+                    self.handlers[command]()
+                else:
+                    self.handlers[command](**params)
             else:
-                logging.warning('Unsupported command: %s: %s',
-                                command, params)
+                logger.warning('Unsupported command: %s: %s',
+                               command, params)
         except Exception as e:
-            logging.warning('Error during command execution',
-                            exc_info=sys.exc_info())
+            logger.warning('Error during command execution',
+                           exc_info=sys.exc_info())
             raise e

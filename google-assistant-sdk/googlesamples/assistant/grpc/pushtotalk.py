@@ -438,9 +438,24 @@ def main(api_endpoint, credentials, project_id,
 
     device_handler = device_helpers.DeviceRequestHandler(device_id)
 
+    @device_handler.command('action.devices.commands.BrightnessAbsolute')
+    def brightness_absolute(brightness):
+        # ex. 明るさを65%にして
+        logger.info('Setting the brightness to %i' % brightness)
+
+    @device_handler.command('action.devices.commands.ColorAbsolute')
+    def color_absolute(color):
+        # ex. "明かりの色を青くして", "明かりを柔らかい白にして"
+        logger.info('Setting the color to %s' % color)
+
+    @device_handler.command('action.devices.commands.Dock')
+    def dock():
+        # ex. "充電のために戻って"
+        logger.info('Returing for charging')
+
     @device_handler.command('action.devices.commands.OnOff')
     def onoff(on):
-        # on: つけて、点灯して off:消して、消灯して
+        # ex. "つけて","点灯して","消して","消灯して"
         if on:
             subprocess.check_call('./bin/tentou')
             logger.info('Turning device on')
@@ -448,8 +463,28 @@ def main(api_endpoint, credentials, project_id,
             subprocess.check_call('./bin/shoutou')
             logger.info('Turning device off')
 
+    @device_handler.command('action.devices.commands.StartStop')
+    def startstop(start):
+        # ex. "スタートして", "ストップして"
+        if start:
+            logger.info('Starting device')
+        else:
+            logger.info('Stopping device')
+
+    @device_handler.command('action.devices.commands.PauseUnpause')
+    def pauseunpause(pause):
+        # ex. "一時停止して","一時停止を解除して"
+        if pause:
+            logger.info('Setting pause')
+        else:
+            logger.info('Unsetting pause')
+
+    @device_handler.command('action.devices.commands.ThermostatTemperatureSetpoint')
+    def thermostat(thermostatTemperatureSetpoint):
+        logger.info('Setting thermostat to %i' % thermostatTemperatureSetpoint)
+
     @device_handler.command('io.github.naohirotamura.commands.ReportLightSensor')
-    def light_sensor(dummy):
+    def light_sensor():
         ratio = lightsensor.read_lightsensor_adc_ratio()
         logger.info('Reporting light sensor AD converter ratio: %.2f percent'
               % ratio)
@@ -457,7 +492,7 @@ def main(api_endpoint, credentials, project_id,
             'ライトセンサー AD コンバーター比は %.2f パーセントです' % ratio)
 
     @device_handler.command('io.github.naohirotamura.commands.ReportHumidity')
-    def humidity(dummy):
+    def humidity():
         for i in range(20):
             result = dht11.read_dht11_dat()
             if result:
@@ -477,21 +512,21 @@ def main(api_endpoint, credentials, project_id,
                 '湿度の取得はタイムアウトしました')
 
     @device_handler.command('io.github.naohirotamura.commands.ReportAltitude')
-    def altitude(dummy):
+    def altitude():
         altitude = bmp.read_altitude()
         logger.info('Reporting altitude: %.2f meter' % altitude)
         synthesize_text.synthesize_text(
             '標高は %.2f メートルです' % altitude)
 
     @device_handler.command('io.github.naohirotamura.commands.ReportTemperature')
-    def temperature(dummy):
+    def temperature():
         temperature = bmp.read_temperature()
         logger.info('Reporting room temperature: %.2f C' % temperature)
         synthesize_text.synthesize_text(
             '部屋の気温は %.2f 度です' % temperature)
 
     @device_handler.command('io.github.naohirotamura.commands.ReportPressure')
-    def pressure(dummy):
+    def pressure():
         pressure = bmp.read_pressure() / 100.0
         logger.info('Reporting pressure: %.2f hPa' % pressure)
         synthesize_text.synthesize_text(

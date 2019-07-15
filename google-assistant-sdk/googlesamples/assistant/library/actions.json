@@ -37,10 +37,7 @@
                             },
                             {
                                 "deviceExecution": {
-                                    "command": "io.github.naohirotamura.commands.ReportLightSensor",
-                                    "params": {
-                                        "dummy": "dummy"
-                                    }
+                                    "command": "io.github.naohirotamura.commands.ReportLightSensor"
                                 }
                             }
                         ]
@@ -77,10 +74,7 @@
                             },
                             {
                                 "deviceExecution": {
-                                    "command": "io.github.naohirotamura.commands.ReportHumidity",
-                                    "params": {
-                                        "dummy": "dummy"
-                                    }
+                                    "command": "io.github.naohirotamura.commands.ReportHumidity"
                                 }
                             }
                         ]
@@ -117,10 +111,7 @@
                             },
                             {
                                 "deviceExecution": {
-                                    "command": "io.github.naohirotamura.commands.ReportAltitude",
-                                    "params": {
-                                        "dummy": "dummy"
-                                    }
+                                    "command": "io.github.naohirotamura.commands.ReportAltitude"
                                 }
                             }
                         ]
@@ -159,10 +150,7 @@
                             },
                             {
                                 "deviceExecution": {
-                                    "command": "io.github.naohirotamura.commands.ReportTemperature",
-                                    "params": {
-                                        "dummy": "dummy"
-                                    }
+                                    "command": "io.github.naohirotamura.commands.ReportTemperature"
                                 }
                             }
                         ]
@@ -199,10 +187,7 @@
                             },
                             {
                                 "deviceExecution": {
-                                    "command": "io.github.naohirotamura.commands.ReportPressure",
-                                    "params": {
-                                        "dummy": "dummy"
-                                    }
+                                    "command": "io.github.naohirotamura.commands.ReportPressure"
                                 }
                             }
                         ]
