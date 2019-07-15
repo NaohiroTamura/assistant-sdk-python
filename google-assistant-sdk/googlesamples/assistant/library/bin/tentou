@@ -1,0 +1,8 @@
+#!/bin/bash
+
+sudo bto_advanced_USBIR_cmd -d $(cat bin/tentou.txt)
+if [ $? = 0 ]; then
+  echo "Turned on the light."
+else
+  echo "Command failed!"
+fi

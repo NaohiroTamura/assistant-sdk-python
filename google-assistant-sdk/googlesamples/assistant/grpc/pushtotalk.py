@@ -442,10 +442,10 @@ def main(api_endpoint, credentials, project_id,
     def onoff(on):
         # on: つけて、点灯して off:消して、消灯して
         if on:
-            subprocess.check_call('tentou')
+            subprocess.check_call('./bin/tentou')
             logger.info('Turning device on')
         else:
-            subprocess.check_call('shoutou')
+            subprocess.check_call('./bin/shoutou')
             logger.info('Turning device off')
 
     @device_handler.command('io.github.naohirotamura.commands.ReportLightSensor')

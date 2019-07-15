@@ -92,10 +92,10 @@ def process_event(event, assistant):
             if command == "action.devices.commands.OnOff":
                 try:
                     if params['on']:
-                        subprocess.check_call('tentou')
+                        subprocess.check_call('./bin/tentou')
                         print('Turning the ligtht on.')
                     else:
-                        subprocess.check_call('shoutou')
+                        subprocess.check_call('./bin/shoutou')
                         print('Turning the light off.')
                 except:
                     print("subprocess.check_call() failed")
