@@ -144,10 +144,10 @@ def process_event(event, assistant):
                 synthesize_text.synthesize_text(
                     '部屋の気圧は %.2f ヘクトパスカルです' % pressure)
 
-
             if command == "com.fujitsu.commands.CommitCountReport":
-                print('Querying faasshell from', params['start'], 'to', params['end'])
+                print('Querying', params['repository'], 'from', params['start'], 'to', params['end'])
                 result = faasshell.commit_count_report()
+                print('result:', result)
                 if 'error' in result.keys():
                     print('Commit count report returned error', result['error'])
                     synthesize_text.synthesize_text(

@@ -533,8 +533,8 @@ def main(api_endpoint, credentials, project_id,
             '部屋の気圧は %.2f ヘクトパスカルです' % pressure)
 
     @device_handler.command('com.fujitsu.commands.CommitCountReport')
-    def commit_count_report(start, end):
-        logger.info('Querying faasshell from', start, 'to', end)
+    def commit_count_report(repository, start, end):
+        logger.info('Querying ' + repository + ' from ' + start + ' to ' + end)
         result = faasshell.commit_count_report()
         if 'error' in result.keys():
             logger.info('Commit count report returned error', result['error'])

@@ -208,6 +208,10 @@
                 "name": "com.fujitsu.commands.CommitCountReport",
                 "parameters": [
                     {
+                        "name": "repository",
+                        "type": "Repository"
+                    },
+                    {
                         "name": "start",
                         "type": "SchemaOrg_Date"
                     },
@@ -218,9 +222,10 @@
                 ],
                 "trigger": {
                     "queryPatterns": [
-                        " faasshell from $SchemaOrg_Date:start (to $SchemaOrg_Date:end)?",
-                        "貢献数は",
-                        "コミット数は"
+                        "OSS リポジトリ $Repository:repository ($SchemaOrg_Date:start)? ($SchemaOrg_Date:end)?",
+                        "OSS リポジトリー $Repository:repository ($SchemaOrg_Date:start)? ($SchemaOrg_Date:end)?",
+                        "OSS コミット $Repository:repository ($SchemaOrg_Date:start)? ($SchemaOrg_Date:end)?",
+                        "OSS 貢献 $Repository:repository ($SchemaOrg_Date:start)? ($SchemaOrg_Date:end)?"
                     ]
                 }
             },
@@ -237,6 +242,7 @@
                                 "deviceExecution": {
                                     "command": "com.fujitsu.commands.CommitCountReport",
                                     "params": {
+                                        "repository": "$repository",
                                         "start": "$start",
                                         "end": "$end"
                                     }
@@ -246,6 +252,45 @@
                     }
                 }
             }
+        }
+    ],
+    "types": [
+        {
+            "name": "$Repository",
+            "entities": [
+                {
+                    "key": "faashell",
+                    "synonyms": [
+                        "faas",
+                        "fassshell",
+                        "fs",
+                        "ファーズ",
+                        "ファーシェル",
+                        "ファーズシェル"
+                    ]
+                },
+                {
+                    "key": "buildah",
+                    "synonyms": [
+                        "builder",
+                        "bl",
+                        "ビルダー",
+                        "ビルダア",
+                        "ビルド"
+                    ]
+                },
+                {
+                    "key": "kubernetes",
+                    "synonyms": [
+                        "kubernetes",
+                        "kube",
+                        "kb",
+                        "クバネティス",
+                        "キューブ",
+                        "ケービー"
+                    ]
+                }
+            ]
         }
     ]
 }
