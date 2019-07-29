@@ -35,11 +35,14 @@ import synthesize_text
 
 import faasshell
 
-from BMP180 import BMP180
-import dht11
-from gpiozero import LED
-import lightsensor
-
+try:
+    from BMP180 import BMP180
+    import dht11
+    from gpiozero import LED
+    import lightsensor
+    GPIO_FLAG = True
+except:
+    GPIO_FLAG = False
 
 import faulthandler
 faulthandler.enable()
@@ -58,10 +61,10 @@ WARNING_NOT_REGISTERED = """
     https://developers.google.com/assistant/sdk/guides/library/python/embed/register-device
 """
 
-
-LED23 = LED(23)
-bmp = BMP180()
-lightsensor.setup()
+if GPIO_FLAG:
+    LED23 = LED(23)
+    bmp = BMP180()
+    lightsensor.setup()
 
 
 def process_event(event, assistant):
@@ -75,7 +78,8 @@ def process_event(event, assistant):
     """
     if event.type == EventType.ON_CONVERSATION_TURN_STARTED:
         snowboywave.play_audio_file(snowboywave.DETECT_DING)
-        LED23.on()
+        if GPIO_FLAG:
+            LED23.on()
         print()
 
     print(event)
@@ -83,7 +87,8 @@ def process_event(event, assistant):
     if (event.type == EventType.ON_CONVERSATION_TURN_FINISHED and
             event.args and not event.args['with_follow_on_turn']):
         snowboywave.play_audio_file(snowboywave.DETECT_DONG)
-        LED23.off()
+        if GPIO_FLAG:
+            LED23.off()
         print()
     if event.type == EventType.ON_DEVICE_ACTION:
         assistant.stop_conversation()
