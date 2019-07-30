@@ -259,11 +259,10 @@
             "name": "$Repository",
             "entities": [
                 {
-                    "key": "faashell",
+                    "key": "faasshell",
                     "synonyms": [
                         "faas",
-                        "fassshell",
-                        "fs",
+                        "fa",
                         "ファーズ",
                         "ファーシェル",
                         "ファーズシェル"
@@ -284,7 +283,7 @@
                     "synonyms": [
                         "kubernetes",
                         "kube",
-                        "kb",
+                        "kn",
                         "クバネティス",
                         "キューブ",
                         "ケービー"

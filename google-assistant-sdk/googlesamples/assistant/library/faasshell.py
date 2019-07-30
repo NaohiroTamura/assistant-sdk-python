@@ -3,7 +3,7 @@
 import json
 import requests
 
-def commit_count_report():
+def commit_count_report(owner, name, since, until):
     faasshell_apihost = 'https://protected-depths-49487.herokuapp.com'
     url = faasshell_apihost + '/statemachine/commit_count_report.json?blocking=true'
     header = {'Content-type': 'application/json'}
@@ -11,10 +11,10 @@ def commit_count_report():
         'input': {
             'github': {
                 'target': 'fujitsu.com',
-                'owner': 'naohirotamura',
-                'name': 'faasshell',
-                'since': '2018-06-21T00:00:00+00:00',
-                'until': '2018-07-20T00:00:00+00:00'
+                'owner': owner,              # 'naohirotamura',
+                'name': name,                # 'faasshell',
+                'since': since,              # '2018-06-21T00:00:00+00:00',
+                'until': until               # '2018-07-20T00:00:00+00:00'
             },
             'gsheet': {
                 'sheetId': '1ywCxG8xTKOYK89AEZIqgpTvbvpbrb1s4H_bMVvKV59I'
@@ -31,7 +31,8 @@ def commit_count_report():
 
 
 if __name__ == '__main__':
-    r = commit_count_report()
+    r = commit_count_report('naohirotamura', 'faasshell',
+                            '2018-06-21T00:00:00+00:00', '2018-07-20T00:00:00+00:00')
     if 'error' in r.keys():
         print(r['error'])
     else:

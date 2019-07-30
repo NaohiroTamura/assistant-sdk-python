@@ -16,10 +16,12 @@
 
 
 from __future__ import print_function
+from datetime import date, timedelta
 import argparse
 import json
 import os.path
 import pathlib2 as pathlib
+import re
 import subprocess
 import time
 
@@ -165,8 +167,27 @@ def process_event(event, assistant):
                     '部屋の気圧は %.2f ヘクトパスカルです' % pressure)
 
             if command == "com.fujitsu.commands.CommitCountReport":
+                OWNER = {'faasshell': 'naohirotamura',
+                         'buildah': 'containers',
+                         'kubernetes': 'kubernetes'}
+
+                date_pattern = re.compile('(\d{4})年(\d{1,2})月(\d{1,2})日')
+
                 print('Querying', params['repository'], 'from', params['start'], 'to', params['end'])
-                result = faasshell.commit_count_report()
+                if params['start'] == '':
+                    start = date.today().strftime("%Y-%m-%d") + "T00:00:00+00:00"
+                else:
+                    y1,m1,d1 = date_pattern.search(params['start']).groups()
+                    start = date(int(y1),int(m1),int(d1)).strftime("%Y-%m-%d") + "T00:00:00+00:00"
+                if params['end'] == '':
+                    end = (date.today() - timedelta(days=30)).strftime("%Y-%m-%d") + "T00:00:00+00:00"
+                else:
+                    y2,m2,d2 = date_pattern.search(params['end']).groups()
+                    end = date(int(y1),int(m1),int(d1)).strftime("%Y-%m-%d") + "T00:00:00+00:00"
+
+                print('owner:', OWNER[params['repository']], 'start:', start, 'end:', end)
+                result = faasshell.commit_count_report(OWNER[params['repository']], params['repository'],
+                                                       start, end)
                 print('result:', result)
                 if 'error' in result.keys():
                     print('Commit count report returned error', result['error'])

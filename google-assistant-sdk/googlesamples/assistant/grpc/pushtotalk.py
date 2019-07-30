@@ -14,12 +14,14 @@
 
 """Sample that implements a gRPC client for the Google Assistant API."""
 
+from datetime import date, timedelta
 import concurrent.futures
 import json
 import logging
 import os
 import os.path
 import pathlib2 as pathlib
+import re
 import sys
 import subprocess
 import time
@@ -554,8 +556,27 @@ def main(api_endpoint, credentials, project_id,
 
     @device_handler.command('com.fujitsu.commands.CommitCountReport')
     def commit_count_report(repository, start, end):
+        OWNER = {'faasshell': 'naohirotamura',
+                 'buildah': 'containers',
+                 'kubernetes': 'kubernetes'}
+
+        date_pattern = re.compile('(\d{4})年(\d{1,2})月(\d{1,2})日')
+
         logger.info('Querying ' + repository + ' from ' + start + ' to ' + end)
-        result = faasshell.commit_count_report()
+        if start == '':
+            start_iso = date.today().strftime("%Y-%m-%d") + "T00:00:00+00:00"
+        else:
+            y1,m1,d1 = date_pattern.search(start).groups()
+            start_iso = date(int(y1),int(m1),int(d1)).strftime("%Y-%m-%d") + "T00:00:00+00:00"
+        if end == '':
+            end_iso = (date.today() - timedelta(days=30)).strftime("%Y-%m-%d") + "T00:00:00+00:00"
+        else:
+            y2,m2,d2 = date_pattern.search(end).groups()
+            end_iso = date(int(y1),int(m1),int(d1)).strftime("%Y-%m-%d") + "T00:00:00+00:00"
+
+        print('owner:', OWNER[repository], 'start:', start_iso, 'end:', end_iso)
+        result = faasshell.commit_count_report(OWNER[repository], repository,
+                                               start_iso, end_iso)
         if 'error' in result.keys():
             logger.info('Commit count report returned error', result['error'])
             synthesize_text.synthesize_text(
