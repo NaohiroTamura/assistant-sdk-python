@@ -57,10 +57,14 @@ import synthesize_text
 
 import faasshell
 
-from BMP180 import BMP180
-import dht11
-from gpiozero import LED
-import lightsensor
+try:
+    from BMP180 import BMP180
+    import dht11
+    from gpiozero import LED
+    import lightsensor
+    GPIO_FLAG = True
+except:
+    GPIO_FLAG = False
 
 
 ASSISTANT_API_ENDPOINT = 'embeddedassistant.googleapis.com'
@@ -72,9 +76,10 @@ DEFAULT_GRPC_DEADLINE = 60 * 3 + 5
 
 logger = logging.getLogger(__name__)
 
-LED23 = LED(23)
-bmp = BMP180()
-lightsensor.setup()
+if GPIO_FLAG:
+    LED23 = LED(23)
+    bmp = BMP180()
+    lightsensor.setup()
 
 
 class SampleAssistant(object):
@@ -485,7 +490,10 @@ def main(api_endpoint, credentials, project_id,
 
     @device_handler.command('io.github.naohirotamura.commands.ReportLightSensor')
     def light_sensor():
-        ratio = lightsensor.read_lightsensor_adc_ratio()
+        if GPIO_FLAG:
+            ratio = lightsensor.read_lightsensor_adc_ratio()
+        else:
+            ratio = 0
         logger.info('Reporting light sensor AD converter ratio: %.2f percent'
               % ratio)
         synthesize_text.synthesize_text(
@@ -494,7 +502,10 @@ def main(api_endpoint, credentials, project_id,
     @device_handler.command('io.github.naohirotamura.commands.ReportHumidity')
     def humidity():
         for i in range(20):
-            result = dht11.read_dht11_dat()
+            if GPIO_FLAG:
+                result = dht11.read_dht11_dat()
+            else:
+                result = [0, 0]
             if result:
                 break
             else:
@@ -513,21 +524,30 @@ def main(api_endpoint, credentials, project_id,
 
     @device_handler.command('io.github.naohirotamura.commands.ReportAltitude')
     def altitude():
-        altitude = bmp.read_altitude()
+        if GPIO_FLAG:
+            altitude = bmp.read_altitude()
+        else:
+            altitude = 0
         logger.info('Reporting altitude: %.2f meter' % altitude)
         synthesize_text.synthesize_text(
             '標高は %.2f メートルです' % altitude)
 
     @device_handler.command('io.github.naohirotamura.commands.ReportTemperature')
     def temperature():
-        temperature = bmp.read_temperature()
+        if GPIO_FLAG:
+            temperature = bmp.read_temperature()
+        else:
+            temperature = 0
         logger.info('Reporting room temperature: %.2f C' % temperature)
         synthesize_text.synthesize_text(
             '部屋の気温は %.2f 度です' % temperature)
 
     @device_handler.command('io.github.naohirotamura.commands.ReportPressure')
     def pressure():
-        pressure = bmp.read_pressure() / 100.0
+        if GPIO_FLAG:
+            pressure = bmp.read_pressure() / 100.0
+        else:
+            pressure = 0
         logger.info('Reporting pressure: %.2f hPa' % pressure)
         synthesize_text.synthesize_text(
             '部屋の気圧は %.2f ヘクトパスカルです' % pressure)
@@ -566,10 +586,12 @@ def main(api_endpoint, credentials, project_id,
         def detected_callback():
             logger.info("hotword detected")
             snowboywave.play_audio_file(snowboywave.DETECT_DING)
-            LED23.on()
+            if GPIO_FLAG:
+                LED23.on()
             assistant.assist()
             snowboywave.play_audio_file(snowboywave.DETECT_DONG)
-            LED23.off()
+            if GPIO_FLAG:
+                LED23.off()
 
         if once:
             assistant.assist()

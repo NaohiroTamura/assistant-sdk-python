@@ -106,7 +106,10 @@ def process_event(event, assistant):
                     print("subprocess.check_call() failed")
 
             if command == "io.github.naohirotamura.commands.ReportLightSensor":
-                ratio = lightsensor.read_lightsensor_adc_ratio()
+                if GPIO_FLAG:
+                    ratio = lightsensor.read_lightsensor_adc_ratio()
+                else:
+                    ratio = 0
                 print('Reporting light sensor AD converter ratio: %.2f percent'
                       % ratio)
                 synthesize_text.synthesize_text(
@@ -114,7 +117,10 @@ def process_event(event, assistant):
 
             if command == "io.github.naohirotamura.commands.ReportHumidity":
                 for i in range(20):
-                    result = dht11.read_dht11_dat()
+                    if GPIO_FLAG:
+                        result = dht11.read_dht11_dat()
+                    else:
+                        result = [0,0]
                     if result:
                         break
                     else:
@@ -132,19 +138,28 @@ def process_event(event, assistant):
                         '湿度の取得はタイムアウトしました')
 
             if command == "io.github.naohirotamura.commands.ReportAltitude":
-                altitude = bmp.read_altitude()
+                if GPIO_FLAG:
+                    altitude = bmp.read_altitude()
+                else:
+                    altitude = 0
                 print('Reporting altitude: %.2f meter' % altitude)
                 synthesize_text.synthesize_text(
                     '標高は %.2f メートルです' % altitude)
 
             if command == "io.github.naohirotamura.commands.ReportTemperature":
-                temperature = bmp.read_temperature()
+                if GPIO_FLAG:
+                    temperature = bmp.read_temperature()
+                else:
+                    temperature = 0
                 print('Reporting room temperature: %.2f C' % temperature)
                 synthesize_text.synthesize_text(
                     '部屋の気温は %.2f 度です' % temperature)
 
             if command == "io.github.naohirotamura.commands.ReportPressure":
-                pressure = bmp.read_pressure() / 100.0
+                if GPIO_FLAG:
+                    pressure = bmp.read_pressure() / 100.0
+                else:
+                    pressure = 0
                 print('Reporting pressure: %.2f hPa' % pressure)
                 synthesize_text.synthesize_text(
                     '部屋の気圧は %.2f ヘクトパスカルです' % pressure)
