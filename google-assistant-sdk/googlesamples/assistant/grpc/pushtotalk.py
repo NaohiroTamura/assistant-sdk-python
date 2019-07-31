@@ -572,7 +572,7 @@ def main(api_endpoint, credentials, project_id,
             end_iso = (date.today() - timedelta(days=30)).strftime("%Y-%m-%d") + "T00:00:00+00:00"
         else:
             y2,m2,d2 = date_pattern.search(end).groups()
-            end_iso = date(int(y1),int(m1),int(d1)).strftime("%Y-%m-%d") + "T00:00:00+00:00"
+            end_iso = date(int(y2),int(m2),int(d2)).strftime("%Y-%m-%d") + "T00:00:00+00:00"
 
         print('owner:', OWNER[repository], 'start:', start_iso, 'end:', end_iso)
         result = faasshell.commit_count_report(OWNER[repository], repository,

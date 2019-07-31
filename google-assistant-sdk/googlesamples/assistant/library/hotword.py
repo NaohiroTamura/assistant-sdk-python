@@ -183,7 +183,7 @@ def process_event(event, assistant):
                     end = (date.today() - timedelta(days=30)).strftime("%Y-%m-%d") + "T00:00:00+00:00"
                 else:
                     y2,m2,d2 = date_pattern.search(params['end']).groups()
-                    end = date(int(y1),int(m1),int(d1)).strftime("%Y-%m-%d") + "T00:00:00+00:00"
+                    end = date(int(y2),int(m2),int(d2)).strftime("%Y-%m-%d") + "T00:00:00+00:00"
 
                 print('owner:', OWNER[params['repository']], 'start:', start, 'end:', end)
                 result = faasshell.commit_count_report(OWNER[params['repository']], params['repository'],
